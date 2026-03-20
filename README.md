@@ -4,13 +4,21 @@ A minimalist P2P encrypted chat app. Messages are end-to-end encrypted via WebRT
 
 ## How it works
 
-```
-Alice                  Signal Server              Bob
-  |  ── connect code ──→  |  ← connect code ──  |
-  |  ←── SDP exchange ────────── SDP exchange ──→|
-  |                       |                       |
-  |  ←──────── direct DTLS encrypted P2P ────────|
-  |                  (server blind)               |
+```mermaid
+sequenceDiagram
+    participant A as Alice
+    participant S as Signal Server
+    participant B as Bob
+
+    A->>S: share connect code
+    B->>S: share connect code
+    S-->>A: SDP exchange
+    S-->>B: SDP exchange
+    Note over S: server only sees metadata
+
+    A->>B: DTLS encrypted P2P
+    B->>A: DTLS encrypted P2P
+    Note over A,B: server blind from here
 ```
 
 1. Both parties open the app and get a 6-character connection code
@@ -26,14 +34,6 @@ Alice                  Signal Server              Bob
 - ⚡ True P2P — no message storage, no server relay
 - 🌓 Dark / light mode
 - 📱 Responsive layout
-
-## Tech stack
-
-- [Vue 3](https://vuejs.org/) + [TypeScript](https://www.typescriptlang.org/)
-- [PeerJS](https://peerjs.com/) — WebRTC abstraction + signaling
-- [shadcn-vue](https://www.shadcn-vue.com/) — UI components
-- [Tailwind CSS](https://tailwindcss.com/) — styling
-- [VueUse](https://vueuse.org/) — `useDark` and other composables
 
 ## Getting started
 
