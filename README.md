@@ -65,6 +65,12 @@ npx peerjs --port 9000
 
 Then point the client at your own server in `initPeer()`.
 
+## 免责声明
+
+1.本项目仅限交流学习  
+2.请勿使用本项目于商用     
+3.若因使用本项目造成不必要的纠纷，本人盖不负责  
+
 ## License
 
 MIT
