@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import type { DataConnection } from 'peerjs'
-import { ArrowRight, Clipboard, LoaderCircle } from 'lucide-vue-next'
+import { ArrowRight, Clipboard, LoaderCircle, Lock } from 'lucide-vue-next'
 import Peer from 'peerjs'
 import { nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Separator } from '@/components/ui/separator'
+import { Textarea } from './components/ui/textarea'
 
 type Status = 'init' | 'ready' | 'connecting' | 'connected' | 'disconnected'
 
@@ -92,7 +93,7 @@ function bindConn() {
 
   conn.on('open', () => {
     status.value = 'connected'
-    addSystem('✓ 加密连接已建立（DTLS over WebRTC）')
+    addSystem('加密连接已建立（DTLS over WebRTC）')
   })
 
   conn.on('data', (data) => {
@@ -180,7 +181,7 @@ onUnmounted(() => {
       </CardHeader>
       <CardContent>
         <div class="flex flex-col gap-2">
-          <label class="text-xs text-muted-foreground">你的连接码</label>
+          <label class="text-xs text-[#bbb]">你的连接码</label>
           <div class="flex items-center justify-center p-2 gap-2 rounded-md border border-dashed">
             <span class="text-2xl tracking-[0.5em]">{{ myId }}</span>
             <Button variant="outline" size="icon" :disabled="!myId" class="hover:cursor-pointer" @click="copyId">
@@ -188,16 +189,16 @@ onUnmounted(() => {
             </Button>
           </div>
         </div>
-        <div class="flex items-center gap-3 my-4">
+        <div class="flex items-center gap-4 my-4">
           <Separator class="flex-1" />
-          <span class="text-xs text-muted-foreground whitespace-nowrap">请输入对方连接码</span>
+          <span class="text-xs text-[#bbb] whitespace-nowrap">等待连接或</span>
           <Separator class="flex-1" />
         </div>
         <div class="flex gap-2">
           <Input
             v-model="peerId"
             class="input"
-            placeholder="请输入对方的连接码"
+            placeholder="输入对方的连接码"
             maxlength="6"
             :disabled="status === 'connecting'"
             @input="peerId = peerId.toUpperCase()"
@@ -207,7 +208,7 @@ onUnmounted(() => {
             :disabled="status !== 'ready' || peerId.length < 6"
             @click="connect"
           >
-            <LoaderCircle v-if="status === 'connecting'" />
+            <LoaderCircle v-if="status === 'connecting'" class="animate-spin" />
             <ArrowRight v-else />
           </Button>
         </div>
@@ -216,76 +217,77 @@ onUnmounted(() => {
           <div v-if="errorMsg" class="text-red-500 text-xs">
             {{ errorMsg }}
           </div>
-          <div v-if="status === 'init'" class="text-muted-foreground text-xs">
-            正在连接信令服务器...
-          </div>
-          <div v-if="status === 'ready'" class="text-muted-foreground text-xs">
+          <div v-if="status === 'ready'" class="text-[#bbb] text-xs">
             服务器已就绪，等待连接
+          </div>
+          <div v-else class="text-[#bbb] text-xs">
+            正在连接信令服务器...
           </div>
         </div>
       </CardContent>
     </Card>
 
-    <div v-else class="chat-card">
-      <div class="chat-topbar">
-        <span class="dot connected" />
-        <span class="text-xs text-muted-foreground">已连接</span>
-        <span class="enc-badge">
-          <svg
-            viewBox="0 0 24 24" width="12" height="12" fill="none"
-            stroke="currentColor" stroke-width="2"
-          >
-            <rect x="3" y="11" width="18" height="11" rx="2" />
-            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
-          </svg>
-          DTLS 加密
-        </span>
-      </div>
-
-      <!-- 消息列表 -->
-      <div ref="messagesEl" class="messages">
-        <template v-for="msg in messages" :key="msg.id">
-          <!-- 系统消息（time 为空时） -->
-          <div v-if="!msg.time" class="sys-msg">
-            {{ msg.text }}
+    <Card v-else class="w-full max-w-lg">
+      <CardHeader>
+        <div class="flex py-4 justify-between border-b">
+          <div class="flex items-center gap-2">
+            <span class="relative flex size-2">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green-400 opacity-75" />
+              <span class="relative inline-flex size-2 rounded-full bg-green-500" />
+            </span>
+            <span class="text-xs text-[#bbb]">已连接</span>
           </div>
-          <!-- 普通消息 -->
-          <div v-else class="bubble" :class="[msg.from]">
-            <div class="bubble-text">
+          <div class="flex items-center gap-2 text-green-400">
+            <Lock class="size-3" />
+            <div class="text-xs">
+              DTLS 加密
+            </div>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div ref="messagesEl" class="messages">
+          <template v-for="msg in messages" :key="msg.id">
+            <div v-if="!msg.time" class="text-center text-xs text-[#bbb]">
               {{ msg.text }}
             </div>
-            <div class="bubble-time">
-              {{ msg.time }}
+            <!-- 普通消息 -->
+            <div v-else class="bubble" :class="[msg.from]">
+              <div class="bubble-text">
+                {{ msg.text }}
+              </div>
+              <div class="bubble-time">
+                {{ msg.time }}
+              </div>
             </div>
-          </div>
-        </template>
-      </div>
+          </template>
+        </div>
 
-      <!-- 输入栏 -->
-      <div class="input-bar">
-        <textarea
-          v-model="inputText"
-          class="msg-input"
-          placeholder="发送消息…（Enter 发送，Shift+Enter 换行）"
-          rows="1"
-          @keydown="handleKeydown"
-        />
-        <button
-          class="send-btn"
-          :disabled="!inputText.trim()"
-          @click="sendMessage"
-        >
-          <svg
-            viewBox="0 0 24 24" width="18" height="18" fill="none"
-            stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round"
+        <!-- 输入栏 -->
+        <div class="input-bar">
+          <Textarea
+            v-model="inputText"
+            placeholder="发送消息...（Enter 发送，Shift+Enter 换行）"
+            rows="1"
+            @keydown="handleKeydown"
+          />
+          <button
+            class="send-btn"
+            :disabled="!inputText.trim()"
+            @click="sendMessage"
           >
-            <line x1="22" y1="2" x2="11" y2="13" />
-            <polygon points="22 2 15 22 11 13 2 9 22 2" />
-          </svg>
-        </button>
-      </div>
-    </div>
+            <svg
+              viewBox="0 0 24 24" width="18" height="18" fill="none"
+              stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round"
+            >
+              <line x1="22" y1="2" x2="11" y2="13" />
+              <polygon points="22 2 15 22 11 13 2 9 22 2" />
+            </svg>
+          </button>
+        </div>
+      </CardContent>
+    </Card>
   </div>
 </template>
 
@@ -302,28 +304,6 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
-.chat-topbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 16px;
-  border-bottom: 1px solid #f0f0f0;
-  flex-shrink: 0;
-}
-
-.dot {
-  width: 8px; height: 8px; border-radius: 50%;
-  background: #ccc; flex-shrink: 0;
-}
-.dot.connected { background: #22c55e; }
-
-.topbar-label { font-size: 13px; color: #444; flex: 1; }
-
-.enc-badge {
-  display: flex; align-items: center; gap: 4px;
-  font-size: 11px; color: #22c55e;
-}
-
 .messages {
   flex: 1;
   overflow-y: auto;
@@ -331,13 +311,6 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.sys-msg {
-  text-align: center;
-  font-size: 12px;
-  color: #bbb;
-  padding: 2px 0;
 }
 
 .bubble {
@@ -382,22 +355,6 @@ onUnmounted(() => {
   border-top: 1px solid #f0f0f0;
   flex-shrink: 0;
 }
-
-.msg-input {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-  font-size: 14px;
-  resize: none;
-  outline: none;
-  line-height: 1.5;
-  max-height: 100px;
-  overflow-y: auto;
-  font-family: inherit;
-  color: #111;
-}
-.msg-input:focus { border-color: #999; }
 
 .send-btn {
   width: 38px; height: 38px;
