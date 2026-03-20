@@ -238,7 +238,7 @@ onUnmounted(() => {
           <div class="flex flex-col gap-2">
             <span class="text-xs text-muted-foreground">你的连接码</span>
             <div class="flex items-center justify-between gap-2 rounded-lg border border-dashed px-4 py-2">
-              <span class="truncate font-mono text-xl tracking-[0.9em] sm:text-2xl">{{ connectId }}</span>
+              <span class="truncate font-bold text-xl tracking-[0.6em] sm:text-3xl">{{ connectId }}</span>
               <Button variant="secondary" :disabled="!connectId" @click="copyId">
                 <Clipboard class="size-4" />
                 <span class="text-xs">{{ copyLabel }}</span>
