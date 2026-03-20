@@ -214,17 +214,17 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="relative min-h-dvh bg-background dark:bg-black">
-    <main class="relative mx-auto flex min-h-dvh w-full max-w-5xl flex-col items-center justify-start p-4 pt-16 sm:justify-center sm:p-6 sm:pt-20">
-      <Button
-        variant="outline"
-        size="icon"
-        class="absolute right-4 top-4 sm:right-6 sm:top-6 hover:cursor-pointer"
-        @click="toggleDark()"
-      >
-        <Sun v-if="isDark" />
-        <Moon v-else />
-      </Button>
+  <div class="flex items-center justify-center min-h-dvh bg-background dark:bg-black">
+    <Button
+      variant="outline"
+      size="icon"
+      class="absolute right-4 top-4 sm:right-6 sm:top-6 hover:cursor-pointer"
+      @click="toggleDark()"
+    >
+      <Sun v-if="isDark" />
+      <Moon v-else />
+    </Button>
+    <main class="relative flex w-full max-w-5xl flex-col items-center justify-start p-4 pt-16 sm:justify-center sm:p-6 sm:pt-20">
       <Card v-if="status !== 'connected'" class="w-full max-w-md gap-0 border-border/70 bg-card/80">
         <CardHeader class="pb-8">
           <CardTitle class="text-2xl tracking-tight">
@@ -329,7 +329,7 @@ onUnmounted(() => {
                 ref="composerEl"
                 v-model="inputText"
                 rows="1"
-                placeholder="发送消息...（Enter 发送，Shift+Enter 换行）"
+                placeholder="Enter 发送，Shift + Enter 换行"
                 class="w-full resize-none bg-transparent px-2 py-2 text-sm leading-6 outline-none placeholder:text-muted-foreground"
                 @focus="composerFocused = true"
                 @blur="composerFocused = false"
