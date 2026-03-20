@@ -130,8 +130,16 @@ function initPeer() {
     secure: true,
     config: {
       iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
         {
-          urls: 'stun:stun.l.google.com:19302',
+          urls: 'turn:openrelay.metered.ca:80',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
+        },
+        {
+          urls: 'turn:openrelay.metered.ca:443',
+          username: 'openrelayproject',
+          credential: 'openrelayproject',
         },
       ],
     },
@@ -169,6 +177,8 @@ function connect() {
     if (status.value === 'connecting') {
       errorMsg.value = '连接超时，请确认对方已打开页面'
       status.value = 'ready'
+      conn?.close()
+      conn = null
     }
   }, 30000)
   conn.on('open', () => clearTimeout(timer))
