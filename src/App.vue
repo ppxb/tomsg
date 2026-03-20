@@ -170,7 +170,7 @@ function connect() {
       errorMsg.value = '连接超时，请确认对方已打开页面'
       status.value = 'ready'
     }
-  }, 10000)
+  }, 30000)
   conn.on('open', () => clearTimeout(timer))
 }
 
