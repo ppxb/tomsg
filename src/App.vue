@@ -231,7 +231,7 @@ onUnmounted(() => {
             Tomsg
           </CardTitle>
           <CardDescription class="leading-relaxed">
-            P2P 加密聊天，消息经 DTLS 端到端加密，阅后即焚
+            消息经 DTLS 端到端加密，阅后即焚
           </CardDescription>
         </CardHeader>
         <CardContent class="space-y-4">
