@@ -71,5 +71,4 @@ Then point the client at your own server in `initPeer()`.
 
 ## License
 
-MIT
 This project is licensed under the [MIT](LICENSE).
