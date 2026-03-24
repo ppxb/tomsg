@@ -62,7 +62,7 @@ npm run build
 npx peerjs --port 9000
 ```
 
-随后在 initPeer() 函数中，将客户端的信令服务器指向你自行部署的服务器即可。
+随后在 `initPeer()` 函数中，将客户端的信令服务器指向你自行部署的服务器即可。
 
 ## Disclaimer
 
